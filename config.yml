@@ -1,0 +1,19 @@
+viaa:
+    logging:
+        level: DEBUG
+app:
+    rabbit:
+        host: !ENV ${RABBIT_HOST}
+        user: !ENV ${RABBIT_USER}
+        exchange: !ENV ${RABBIT_EXCHANGE}
+        routing_key: !ENV ${RABBIT_ROUTING_KEY}
+        password: !ENV ${RABBIT_PASSWORD}
+        port: !ENV ${RABBIT_PORT}
+    mediahaven:
+        auth: !ENV ${MEDIAHAVEN_TOKEN}
+    database:
+        host: !ENV ${DB_HOST}
+        port: !ENV ${DB_PORT}
+        dbname: !ENV ${DB_DBNAME}
+        user: !ENV ${DB_USER}
+        password: !ENV ${DB_PASSWORD}
