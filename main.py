@@ -29,8 +29,7 @@ mediahaven = MediaHavenService(config)
 
 def delete_fragment_ids(id: str, fragment_ids: list[str]):
     for fragment_id in fragment_ids:
-        mediahaven.delete_fragment(fragment_id)
-        pass
+        mediahaven.delete_fragment_id(fragment_id)
 
     database.update_db_status(id, "FRAGS_DELETE_FINISHED")
 
@@ -75,7 +74,7 @@ if __name__ == "__main__":
         fragment_ids = [item.text for item in fragments + collaterals]
 
         if len(fragment_ids):
-            delete_fragment_ids(fragment_ids)
+            delete_fragment_ids(vrt_item.fragment_id, fragment_ids)
 
         # Remove all dynamic metadata and put s3 metadata
         bucket = f"mam-highres{vrt_item.type}"

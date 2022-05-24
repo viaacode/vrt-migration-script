@@ -23,7 +23,7 @@ class MediaHavenService(object):
             response = requests.request("GET", url, data=payload, headers=headers)
             response.raise_for_status()
         except Exception as e:
-            pass
+            print(f"Something went wrong during `query_item` for item: `{fragment_id}`")
 
         return response.content
 
@@ -44,7 +44,7 @@ class MediaHavenService(object):
             )
             response.raise_for_status()
         except Exception as e:
-            pass
+            print(f"Something went wrong during `query_collaterals` for item: `{pid}`")
 
         return response.content
 
@@ -59,7 +59,9 @@ class MediaHavenService(object):
             response = requests.request("DELETE", url, headers=headers)
             response.raise_for_status()
         except Exception as e:
-            pass
+            print(
+                f"Something went wrong during `delete_fragment_id` for item: `{fragment_id}`"
+            )
 
     def update_item(self, fragment_id: str, sidecar) -> bool:
         url = (
@@ -74,4 +76,6 @@ class MediaHavenService(object):
             response = requests.post(url, headers=headers, files=files)
             response.raise_for_status()
         except Exception as e:
-            pass
+            print(
+                f"Something went wrong during `update_item` for item: `{fragment_id}`"
+            )
