@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 from psycopg_pool import ConnectionPool
 from psycopg.rows import class_row
 
@@ -16,12 +17,12 @@ class VrtItem:
 
 
 class DatabaseService(object):
-    def __init__(self, config: dict = None):
+    def __init__(self, config: dict):
         self.pool = ConnectionPool(
             f"host={config['database']['host']} port={config['database']['port']} dbname={config['database']['dbname']} user={config['database']['user']} password={config['database']['password']}"
         )
 
-    def get_item_to_process(self) -> VrtItem:
+    def get_item_to_process(self) -> Optional[VrtItem]:
         with self.pool.connection() as conn:
             with conn.cursor(row_factory=class_row(VrtItem)) as cur:
                 return cur.execute(

@@ -28,6 +28,8 @@ mediahaven = MediaHavenService(config)
 
 
 def delete_fragment_ids(id: str, fragment_ids: list[str]):
+    print(f"Deleting {len(fragment_ids)} items.")
+    print(fragment_ids)
     for fragment_id in fragment_ids:
         mediahaven.delete_fragment_id(fragment_id)
 
@@ -45,20 +47,30 @@ def send_archived_event(id: str, message: str):
 
 
 if __name__ == "__main__":
+    counter = 0
+    processed: list[str] = []
     # Get first item from DB with status TODO
     vrt_item = database.get_item_to_process()
 
     # As long as the database returns items, we keep going.
-    while vrt_item:
+    while vrt_item and counter < 5000:
         vrt_item = database.get_item_to_process()
+
+        database.update_db_status(vrt_item.fragment_id, "PROCESSING")
 
         # Get all fragment ids for fragments on that item
         item_query_result = mediahaven.query_item(vrt_item.fragment_id)
-        pid: str = (
-            etree.parse(BytesIO(item_query_result))
-            .find("//PID", namespaces=NAMESPACES_METADATA)
-            .text
-        )
+
+        if item_query_result:
+            pid: str = (
+                etree.parse(BytesIO(item_query_result))
+                .find("//PID", namespaces=NAMESPACES_METADATA)
+                .text
+            )
+        else:
+            # Item is not found in MH
+            database.update_db_status(vrt_item.fragment_id, "NOT_FOUND_IN_MH")
+            continue
 
         fragments: list = etree.parse(BytesIO(item_query_result)).findall(
             "//mh:Fragment", namespaces=NAMESPACES_METADATA
@@ -66,9 +78,13 @@ if __name__ == "__main__":
 
         # Get all fragment ids for collaterals of the item
         collateral_query_result = mediahaven.query_collaterals(pid)
-        collaterals: list = etree.parse(BytesIO(collateral_query_result)).findall(
-            "//mh:FragmentId", namespaces=NAMESPACES_METADATA
-        )
+
+        if collateral_query_result:
+            collaterals: list = etree.parse(BytesIO(collateral_query_result)).findall(
+                "//mh:FragmentId", namespaces=NAMESPACES_METADATA
+            )
+        else:
+            collaterals = []
 
         # If we have fragments or collaterals, we will delete them
         fragment_ids = [item.text for item in fragments + collaterals]
@@ -88,4 +104,8 @@ if __name__ == "__main__":
         # Send essenceArchivedEvent so VRT can send new metadata for the naked essence
         message = generate_essence_archived_event(object_key, bucket, pid, vrt_item.md5)
         send_archived_event(vrt_item.fragment_id, message)
+        counter = counter + 1
+        processed.append(vrt_item.fragment_id)
+        print(counter)
+    print(processed)
     pass

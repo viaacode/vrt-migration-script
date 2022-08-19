@@ -7,7 +7,7 @@ import time
 
 
 class RabbitService(object):
-    def __init__(self, config: dict = None):
+    def __init__(self, config: dict):
         self.credentials = pika.PlainCredentials(
             config["rabbit"]["user"], config["rabbit"]["password"]
         )
