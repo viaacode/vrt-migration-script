@@ -16,6 +16,8 @@ PyYAML==6.0
 requests==2.27.1
 structlog==21.5.0
 tomli==2.0.1
+types-requests==2.27.27
+types-urllib3==1.26.14
 typing-extensions==4.1.1
 urllib3==1.26.8
 viaa-chassis==0.2.0rc1
