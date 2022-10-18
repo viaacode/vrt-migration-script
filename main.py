@@ -94,7 +94,11 @@ if __name__ == "__main__":
 
         # Remove all dynamic metadata and put s3 metadata
         bucket = f"mam-highres{vrt_item.type}"
-        object_key = vrt_item.aremakey[len(f"MAM/Highres{vrt_item.type}/") :]
+        if vrt_item.aremakey.startswith("MAM/Highres"):
+            object_key = vrt_item.aremakey[len(f"MAM/Highres{vrt_item.type}/") :]
+        else:
+            object_key = vrt_item.aremakey
+            
         sidecar = transform_metadata(
             BytesIO(item_query_result), object_key, bucket, pid
         )
