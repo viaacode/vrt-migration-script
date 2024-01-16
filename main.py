@@ -79,7 +79,8 @@ if __name__ == "__main__":
         # Get all fragment ids for collaterals of the item
         collateral_query_result = mediahaven.query_collaterals(pid)
 
-        collaterals = [result.Internal.FragmentId for result in collateral_query_result.as_generator()]
+        if collateral_query_result:
+            collaterals = [result.Internal.FragmentId for result in collateral_query_result.as_generator()]
 
         # If we have fragments or collaterals, we will delete them
         fragment_ids = [item.text for item in fragments + collaterals]

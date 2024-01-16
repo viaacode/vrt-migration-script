@@ -2,7 +2,8 @@ import requests
 from mediahaven import MediaHaven
 from mediahaven.resources.base_resource import MediaHavenPageObject
 from mediahaven.mediahaven import MediaHavenException, AcceptFormat
-from mediahaven.oauth2 import RequestTokenError, ROPCGrant 
+from mediahaven.oauth2 import RequestTokenError, ROPCGrant
+
 
 class MediaHavenService(object):
     def __init__(self, config: dict):
@@ -20,14 +21,36 @@ class MediaHavenService(object):
         self.mediahaven_client = MediaHaven(url, grant)
 
     def query_item(self, fragment_id: str) -> bytes:
-        return self.mediahaven_client.records.get(fragment_id, AcceptFormat.XML).raw_response.encode()
+        try:
+            return self.mediahaven_client.records.get(
+                fragment_id, AcceptFormat.XML
+            ).raw_response.encode()
+        except MediaHavenException as e:
+            print(e)
+            print(f"Could not query: `{fragment_id}`")
+            return b""
 
-    def query_collaterals(self, pid: str) -> MediaHavenPageObject:
+    def query_collaterals(self, pid: str) -> MediaHavenPageObject | None:
         querystring = {"q": f"+(ExternalId:{pid}_*)"}
-        return self.mediahaven_client.records.search(querystring)
+        try:
+            return self.mediahaven_client.records.search(query_params=querystring)
+        except MediaHavenException as e:
+            print(e)
+            print(f"Could not query collaterals: `{pid}`")
+            return None
 
     def delete_fragment_id(self, fragment_id: str) -> None:
-        self.mediahaven_client.records.delete(fragment_id)
+        try:
+            self.mediahaven_client.records.delete(fragment_id)
+        except MediaHavenException as e:
+            print(e)
+            print(f"Could not delete: `{fragment_id}`")
 
     def update_item(self, fragment_id: str, sidecar) -> None:
-        self.mediahaven_client.records.update(fragment_id, xml = sidecar, form_data={"reason": "VRT V2 Migration"})
+        try:
+            self.mediahaven_client.records.update(
+                fragment_id, xml=sidecar, form_data={"reason": "VRT V2 Migration"}
+            )
+        except MediaHavenException as e:
+            print(e)
+            print(f"Could not update: `{fragment_id}`")
