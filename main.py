@@ -7,7 +7,7 @@
 
 from lxml import etree
 from io import BytesIO
-from services.mediahaven import MediaHavenService
+from mh import MediaHavenService
 from services.rabbit import RabbitService
 from services.database import DatabaseService
 from helpers.xml_helper import (
@@ -80,11 +80,7 @@ if __name__ == "__main__":
         collateral_query_result = mediahaven.query_collaterals(pid)
 
         if collateral_query_result:
-            collaterals: list = etree.parse(BytesIO(collateral_query_result)).findall(
-                "//mh:FragmentId", namespaces=NAMESPACES_METADATA
-            )
-        else:
-            collaterals = []
+            collaterals = [result.Internal.FragmentId for result in collateral_query_result.as_generator()]
 
         # If we have fragments or collaterals, we will delete them
         fragment_ids = [item.text for item in fragments + collaterals]
@@ -103,7 +99,7 @@ if __name__ == "__main__":
             BytesIO(item_query_result), object_key, bucket, pid
         )
 
-        update_metadata(vrt_item.fragment_id, BytesIO(sidecar))
+        update_metadata(vrt_item.fragment_id, sidecar.decode())
 
         # Send essenceArchivedEvent so VRT can send new metadata for the naked essence
         message = generate_essence_archived_event(object_key, bucket, pid, vrt_item.md5)
