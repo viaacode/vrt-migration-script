@@ -26,14 +26,14 @@ class DatabaseService(object):
         with self.pool.connection() as conn:
             with conn.cursor(row_factory=class_row(VrtItem)) as cur:
                 return cur.execute(
-                    "SELECT * FROM public.vrt_migration_v2 WHERE status = 'TODO' LIMIT 1"
+                    "SELECT * FROM public.vrt_migration_v2_2024 WHERE status = 'TODO' LIMIT 1"
                 ).fetchone()
 
     def update_db_status(self, fragment_id: str, status: str):
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "UPDATE public.vrt_migration_v2 SET status = %s WHERE fragment_id = %s;",
+                    "UPDATE public.vrt_migration_v2_2024 SET status = %s WHERE fragment_id = %s;",
                     (status, fragment_id),
                 )
 

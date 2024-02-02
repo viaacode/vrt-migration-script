@@ -7,7 +7,7 @@
 
 from lxml import etree
 from io import BytesIO
-from mh import MediaHavenService
+from services.mh import MediaHavenService
 from services.rabbit import RabbitService
 from services.database import DatabaseService
 from helpers.xml_helper import (

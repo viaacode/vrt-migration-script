@@ -8,11 +8,11 @@ from mediahaven.oauth2 import RequestTokenError, ROPCGrant
 class MediaHavenService(object):
     def __init__(self, config: dict):
         # self.auth_header = f"Basic {config['mediahaven']['auth']}"
-        client_id = config["mh_client_id"]
-        client_secret = config["mh_client_secret"]
-        user = config["mh_username"]
-        password = config["mh_password"]
-        url = config["mh_host"]
+        client_id = config['mediahaven']["client_id"]
+        client_secret = config['mediahaven']["client_secret"]
+        user = config['mediahaven']["username"]
+        password = config['mediahaven']["password"]
+        url = config['mediahaven']["host"]
         grant = ROPCGrant(url, client_id, client_secret)
         try:
             grant.request_token(user, password)
