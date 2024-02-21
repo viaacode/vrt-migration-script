@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:mh="https://zeticon.mediahaven.com/metadata/20.3/mh/"
-    xmlns:mhs="https://zeticon.mediahaven.com/metadata/20.3/mhs/"
+    xmlns:mh="https://zeticon.mediahaven.com/metadata/23.1/mh/"
+    xmlns:mhs="https://zeticon.mediahaven.com/metadata/23.1/mhs/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <xsl:output method="xml" encoding="UTF-8" byte-order-mark="no" indent="yes"/>
     <xsl:param name="pid" />
     <xsl:param name="s3_object_key" />
     <xsl:param name="s3_bucket" />
     <xsl:template match="/">
-        <mhs:Sidecar xmlns:mhs="https://zeticon.mediahaven.com/metadata/20.3/mhs/"
-            xmlns:mh="https://zeticon.mediahaven.com/metadata/20.3/mh/" version="20.3">
+        <mhs:Sidecar xmlns:mhs="https://zeticon.mediahaven.com/metadata/23.1/mhs/"
+            xmlns:mh="https://zeticon.mediahaven.com/metadata/23.1/mh/" version="23.1">
             <xsl:apply-templates select="//mhs:Dynamic"/>
             <mhs:Descriptive>
                 <mh:Title>Essence: pid: <xsl:value-of select = "$pid" /></mh:Title>
