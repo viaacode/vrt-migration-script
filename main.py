@@ -7,7 +7,7 @@
 
 from lxml import etree
 from io import BytesIO
-from mh import MediaHavenService
+from services.mh import MediaHavenService
 from services.rabbit import RabbitService
 from services.database import DatabaseService
 from helpers.xml_helper import (
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     vrt_item = database.get_item_to_process()
 
     # As long as the database returns items, we keep going.
-    while vrt_item and counter < 5000:
+    while vrt_item:
         vrt_item = database.get_item_to_process()
 
         database.update_db_status(vrt_item.fragment_id, "PROCESSING")
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         fragments: list = etree.parse(BytesIO(item_query_result)).findall(
             "//mh:Fragment", namespaces=NAMESPACES_METADATA
         )
-
+        
         # Get all fragment ids for collaterals of the item
         collateral_query_result = mediahaven.query_collaterals(pid)
 

@@ -10,7 +10,11 @@ app:
         password: !ENV ${RABBIT_PASSWORD}
         port: !ENV ${RABBIT_PORT}
     mediahaven:
-        auth: !ENV ${MEDIAHAVEN_TOKEN}
+        client_id: !ENV ${MEDIAHAVEN_CLIENT_ID}
+        client_secret: !ENV ${MEDIAHAVEN_CLIENT_SECRET}
+        username: !ENV ${MEDIAHAVEN_USERNAME}
+        password: !ENV ${MEDIAHAVEN_PASSWORD}
+        host: !ENV ${MEDIAHAVEN_HOST}
     database:
         host: !ENV ${DB_HOST}
         port: !ENV ${DB_PORT}
