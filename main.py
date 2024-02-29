@@ -26,10 +26,9 @@ rabbit = RabbitService(config)
 database = DatabaseService(config)
 mediahaven = MediaHavenService(config)
 
-
 def delete_fragment_ids(id: str, fragment_ids: list[str]):
-    print(f"Deleting {len(fragment_ids)} items.")
-    print(fragment_ids)
+    log.info(f"Deleting {len(fragment_ids)} items.")
+    log.info(fragment_ids)
     for fragment_id in fragment_ids:
         mediahaven.delete_fragment_id(fragment_id)
 
@@ -47,9 +46,11 @@ def send_archived_event(id: str, message: str):
 
 
 if __name__ == "__main__":
+    log.info("Starting VRT Migration run....")
     counter = 0
     processed: list[str] = []
     # Get first item from DB with status TODO
+    log.info("Getting 'TODO'-records from database: public.vrt_migration_v2_2024@%s" % config['database']['host'])
     vrt_item = database.get_item_to_process()
 
     # As long as the database returns items, we keep going.
@@ -62,6 +63,7 @@ if __name__ == "__main__":
         item_query_result = mediahaven.query_item(vrt_item.fragment_id)
 
         if item_query_result:
+            log.debug(f"Item found in MH: {vrt_item.fragment_id}")
             pid: str = (
                 etree.parse(BytesIO(item_query_result))
                 .find("//PID", namespaces=NAMESPACES_METADATA)
@@ -69,6 +71,7 @@ if __name__ == "__main__":
             )
         else:
             # Item is not found in MH
+            log.debug(f"Item NOT found in MH: {vrt_item.fragment_id}")
             database.update_db_status(vrt_item.fragment_id, "NOT_FOUND_IN_MH")
             continue
 
@@ -86,6 +89,7 @@ if __name__ == "__main__":
         fragment_ids = [item.text for item in fragments + collaterals]
 
         if len(fragment_ids):
+            log.debug(f"Fragments of collaterals found for: {vrt_item.fragment_id}")
             delete_fragment_ids(vrt_item.fragment_id, fragment_ids)
 
         # Remove all dynamic metadata and put s3 metadata
@@ -106,6 +110,6 @@ if __name__ == "__main__":
         send_archived_event(vrt_item.fragment_id, message)
         counter = counter + 1
         processed.append(vrt_item.fragment_id)
-        print(counter)
-    print(processed)
+        log.info(f"Items processed: {counter}")
+    log.info(f"Items processed: {processed}")
     pass
