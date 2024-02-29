@@ -21,3 +21,4 @@ types-urllib3==1.26.14
 typing-extensions==4.1.1
 urllib3==1.26.8
 viaa-chassis==0.2.0rc1
+mediahaven==0.5
