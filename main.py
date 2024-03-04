@@ -55,8 +55,6 @@ if __name__ == "__main__":
 
     # As long as the database returns items, we keep going.
     while vrt_item:
-        vrt_item = database.get_item_to_process()
-
         database.update_db_status(vrt_item.fragment_id, "PROCESSING")
 
         # Get all fragment ids for fragments on that item
@@ -89,7 +87,7 @@ if __name__ == "__main__":
         fragment_ids = [item.text for item in fragments + collaterals]
 
         if len(fragment_ids):
-            log.debug(f"Fragments of collaterals found for: {vrt_item.fragment_id}")
+            log.debug(f"Fragments or collaterals found for: {vrt_item.fragment_id}")
             delete_fragment_ids(vrt_item.fragment_id, fragment_ids)
 
         # Remove all dynamic metadata and put s3 metadata
@@ -111,5 +109,7 @@ if __name__ == "__main__":
         counter = counter + 1
         processed.append(vrt_item.fragment_id)
         log.info(f"Items processed: {counter}")
+        # Try and fetch the next record.
+        vrt_item = database.get_item_to_process()
     log.info(f"Items processed: {processed}")
     pass
