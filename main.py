@@ -52,6 +52,10 @@ if __name__ == "__main__":
     # Get first item from DB with status TODO
     log.info("Getting 'TODO'-records from database: public.vrt_migration_v2_2024@%s" % config['database']['host'])
     vrt_item = database.get_item_to_process()
+    if vrt_item:
+        log.debug(f"Processing record with {vrt_item.fragment_id}")
+    else:
+        log.warn("No items found in DB with current query: exiting...")
 
     # As long as the database returns items, we keep going.
     while vrt_item:
@@ -83,8 +87,9 @@ if __name__ == "__main__":
         if collateral_query_result:
             collaterals = [result.Internal.FragmentId for result in collateral_query_result.as_generator()]
 
-        # If we have fragments or collaterals, we will delete them
-        fragment_ids = [item.text for item in fragments + collaterals]
+        # If we have fragments or collaterals, we will delete them. Fragments
+        # is a list of nodes, collaterals a list of strings.
+        fragment_ids = [item.text for item in fragments] + collaterals
 
         if len(fragment_ids):
             log.debug(f"Fragments or collaterals found for: {vrt_item.fragment_id}")
